@@ -69,22 +69,13 @@
   (printf "DrDr revision: ~a\n" rev)
   (printf "Variant: ~a\n" variant)
   (printf "Catalog: ~a/ (~a packages)\n" (path->string (simple-form-path output-dir)) (length entries))
+  (define catalog-url (format "file://~a" (path->string (simple-form-path output-dir))))
   (printf "\nTo reproduce this build:\n")
   (printf "  git clone https://github.com/racket/racket && cd racket\n")
   (printf "  git checkout ~a\n" commit-sha)
-  (printf "  make ~a\n" (if (equal? variant "cs") "cs" "bc"))
-  (printf "  ./racket/bin/raco pkg config --set catalogs \"file://~a/\"\n"
-          (path->string (simple-form-path output-dir)))
-  (printf "  ./racket/bin/raco pkg install --auto -i --deps fail \\\n")
-  ;; List the explicitly-installed packages (non-auto, based on what DrDr installs)
-  (define auto-pkgs
-    (for/list ([e (in-list entries)]
-               #:when (not (member (package-entry-name e)
-                                   ;; These are the packages DrDr explicitly installs
-                                   ;; (from pkgs.rktd). Others are auto-installed deps.
-                                   explicitly-installed-names)))
-      (package-entry-name e)))
-  (printf "    ~a\n" (string-join explicitly-installed-names " \\\n    ")))
+  (printf "  make ~a SRC_CATALOG=~s\n"
+          (if (equal? variant "cs") "cs" "bc")
+          catalog-url))
 
 ;; Package names that DrDr explicitly installs (from pkgs.rktd).
 ;; Everything else in the catalog is an auto-installed dependency.
