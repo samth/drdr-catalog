@@ -52,7 +52,7 @@
   (eprintf "Fetching revision ~a info...\n" rev)
   (define commit-sha (fetch-revision-sha rev server))
   (unless commit-sha
-    (error 'drdr-catalog "could not find commit SHA for revision ~a" rev))
+    (error 'drdr-catalog "revision ~a does not exist or has no commit info" rev))
 
   ;; Fetch and parse pkg-show
   (eprintf "Fetching package list...\n")
